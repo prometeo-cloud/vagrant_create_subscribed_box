@@ -4,16 +4,6 @@
   tasks:
     - include_vars: "{{ playbook_dir }}/defaults/main.yml"
 
-#    - name: Looking for a RHEL Vagrant file
-#      stat:
-#        path: "{{ playbook_dir }}/{{ base_vagrant_box_file }}"
-#      register: VagrantBoxFile
-#
-#    - name: Failing if the RHEL Vagrant Base Box file is not found
-#      fail:
-#        msg: "I cannot find the RHEL Vagrant Base Box file, have you forgotten to copy it to the Ansible folder?"
-#      when: not VagrantBoxFile.stat.exists
-
     - name: Checking if Vagrant is installed
       shell: "type vagrant"
       args:
@@ -28,7 +18,7 @@
       when: result.rc != 0
 
     - name: Starting Vagrant box
-      command: "vagrant up"
+      command: "vagrant up --provider virtualbox"
       changed_when: false
 
 - name: Subscribe Base Box
