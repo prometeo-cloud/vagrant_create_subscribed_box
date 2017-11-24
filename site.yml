@@ -1,0 +1,75 @@
+---
+- name: Start Vagrant Base Box
+  hosts: localhost
+  tasks:
+    - include_vars: "{{ playbook_dir }}/defaults/main.yml"
+
+#    - name: Looking for a RHEL Vagrant file
+#      stat:
+#        path: "{{ playbook_dir }}/{{ base_vagrant_box_file }}"
+#      register: VagrantBoxFile
+#
+#    - name: Failing if the RHEL Vagrant Base Box file is not found
+#      fail:
+#        msg: "I cannot find the RHEL Vagrant Base Box file, have you forgotten to copy it to the Ansible folder?"
+#      when: not VagrantBoxFile.stat.exists
+
+    - name: Checking if Vagrant is installed
+      shell: "type vagrant"
+      args:
+          executable: /bin/bash
+      changed_when: false
+      failed_when: false
+      register: result
+
+    - name: Failing if Vagrant is not installed
+      fail:
+        msg: "I cannot find Vagrant, have you installed it?"
+      when: result.rc != 0
+
+    - name: Starting Vagrant box
+      command: "vagrant up"
+      changed_when: false
+
+- name: Subscribe Base Box
+  hosts: box
+  become: yes
+
+  vars_prompt:
+    - name: "organisation_id"
+      prompt: "What is your organisation identification number for subscription purposes?"
+      private: no
+
+    - name: "activation_key"
+      prompt: "What is the activation key for the subscription?"
+      private: no
+
+  tasks:
+    - name: Registering with activation key
+      redhat_subscription:
+        state: present
+        activationkey: "{{ activation_key }}"
+        org_id: "{{ organisation_id }}"
+      register: sub
+
+    - name: Printing subscription information
+      debug:
+        msg: "{{ sub }}"
+
+    - name: Updating packages, go grab a cup of tea...
+      yum:
+        name: "*"
+        state: "latest"
+
+- name: Exporting subscribed Vagrant Base Box
+  hosts: localhost
+  tasks:
+    - name: Packaging subscribed box
+      command: vagrant package box --output {{ subscribed_vagrant_box_name }}.box
+
+    - name: Installing subscribed box locally
+      command: vagrant box add --name {{ subscribed_vagrant_box_name }} {{ subscribed_vagrant_box_name }}.box
+
+    - name: Destroying box
+      command: vagrant destroy -f box
+...
