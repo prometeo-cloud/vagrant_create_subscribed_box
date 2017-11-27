@@ -1,7 +1,9 @@
 # vagrant_create_subscribed_box
 
 Creates a RHEL Vagrant Box for development purposes which has been registered using **subscription-manager**.
-The Vagrant Box is for use by a single developer.
+The Vagrant Box is for use by a single developer on a Linux machine.
+
+**If you are a developer on a Windows based machine, please use [this readme](https://github.com/prometeo-cloud/vagrant_create_subscribed_box/blob/master/readme-win.md) instead**
 
 ## Requirements for building the Box
 
