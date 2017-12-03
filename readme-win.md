@@ -39,7 +39,7 @@ A developer needs the following before they can execute this role:
     ```
 5.	From the VM command prompt, subscribe the box using the activation key and org ID supplied to you in the following manner:
     ```
-    subscription-manager register --activationkey=”xxxxxxx” --org=”xxxxx”
+    subscription-manager register --activationkey=xxxxxxx --org=xxxxx
     ```
 6.	The box should now be subscribed correctly
 7.	Update the box prior to exporting by running the following:
